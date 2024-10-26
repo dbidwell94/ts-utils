@@ -24,11 +24,11 @@ export type Success<T> = {
 /**
  * Represents the Failure type of a `Result<T, E>`
  */
-export type Failure<E extends Error> = {
+export type Failure<E extends Error = Error> = {
   readonly error: E;
 };
 
-interface ResultUtils<T, E extends Error> {
+interface ResultUtils<T, E extends Error = Error> {
   /**
    * Utility function to determine if the inner type is a `Failure<E>`
    * @returns `true` if the inner type is a `Failure<E>`, otherwise `false`
@@ -79,7 +79,7 @@ interface ResultUtils<T, E extends Error> {
  * @see Success
  * @see Failure
  */
-export type Result<T, E extends Error> = (Success<T> | Failure<E>) &
+export type Result<T, E extends Error = Error> = (Success<T> | Failure<E>) &
   ResultUtils<T, E>;
 
 function buildResult<T, E extends Error>(
@@ -132,7 +132,7 @@ function buildResult<T, E extends Error>(
  * @param error The error to wrap in the `Result<T, E>`
  * @returns A `Result<T, E>` type with a `Failure<E>` inner type
  */
-export function err<T, E extends Error>(error: E): Result<T, E> {
+export function err<T, E extends Error = Error>(error: E): Result<T, E> {
   const innerType: Failure<E> = {
     error,
   };
@@ -145,7 +145,7 @@ export function err<T, E extends Error>(error: E): Result<T, E> {
  * @param value The value to wrap in the `Result<T, E>`
  * @returns A `Result<T, E>` type with a `Success<T>` inner type
  */
-export function ok<T, E extends Error>(value: T): Result<T, E> {
+export function ok<T, E extends Error = Error>(value: T): Result<T, E> {
   const innerType: Success<T> = {
     value,
   };
