@@ -70,6 +70,16 @@ interface ResultUtils<T, E extends Error = Error> {
    * @see Option
    */
   err(): Option<E>;
+  /**
+   * Maps a `Result<T, E>` to `Result<NewT, E>` by applying a function to a contained `Success<T>` value, leaving an `Error<E>` value untouched.
+   * @param fn - The function to apply to the inner value
+   */
+  mapOk<NewT>(fn: (value: T) => NewT): Result<NewT, E>;
+  /**
+   * Maps a `Result<T, E>` to `Result<T, NewE>` by applying a function to a contained `Error<E>` value, leaving a `Success<T>` value untouched.
+   * @param fn - The function to apply to the inner error
+   */
+  mapErr<NewE extends Error>(fn: (error: E) => NewE): Result<T, NewE>;
 }
 
 /**
@@ -123,6 +133,18 @@ function buildResult<T, E extends Error>(
         return some(this.error);
       }
       return none();
+    },
+    mapOk<NewT>(fn: (value: T) => NewT): Result<NewT, E> {
+      if (this.isOk()) {
+        return ok(fn(this.value));
+      }
+      return err(this.error);
+    },
+    mapErr<NewE extends Error>(fn: (error: E) => NewE): Result<T, NewE> {
+      if (this.isError()) {
+        return err(fn(this.error));
+      }
+      return ok(this.value);
     },
   };
 }

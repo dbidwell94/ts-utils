@@ -79,4 +79,30 @@ describe("src/utility/result.ts", () => {
 
     expect(resultValue.err().isSome()).toBeTruthy();
   });
+
+  it("Maps the Success<T> value to a new value if mapOk() is called on a Success<T> type", () => {
+    const resultValue = ok(2);
+
+    expect(resultValue.mapOk((x) => x.toString()).unwrap()).toEqual("2");
+  });
+
+  it("Does not map the Success<T> value if mapOk() is called on a Failure<E> type", () => {
+    const resultValue = err<number>(new Error());
+
+    expect(resultValue.mapOk((x) => x * 2).isError()).toBeTruthy();
+  });
+
+  it("Maps the Failure<E> error to a new error if mapErr() is called on a Failure<E> type", () => {
+    const resultValue = err(new Error());
+
+    expect(
+      resultValue.mapErr(() => new NewErrorClass()).isError()
+    ).toBeTruthy();
+  });
+
+  it("Does not map the Failure<E> error if mapErr() is called on a Success<T> type", () => {
+    const resultValue = ok(2);
+
+    expect(resultValue.mapErr(() => new NewErrorClass()).isOk()).toBeTruthy();
+  });
 });
