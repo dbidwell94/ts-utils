@@ -1,6 +1,6 @@
 {
   "name": "@dbidwell94/ts-utils",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A collection of helpful TypeScript utilities with the aim of having limited production dependencies.",
   "main": "index.js",
   "repository": {
