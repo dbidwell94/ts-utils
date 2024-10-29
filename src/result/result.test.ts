@@ -105,4 +105,10 @@ describe("src/utility/result.ts", () => {
 
     expect(resultValue.mapErr(() => new NewErrorClass()).isOk()).toBeTruthy();
   });
+
+  it("Constructs a Failire<E> error with a default Error if provided with a string instead of an Error", () => {
+    const resultValue = err("This is an error");
+
+    expect(() => resultValue.unwrap()).toThrow(Error);
+  })
 });
