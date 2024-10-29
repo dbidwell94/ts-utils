@@ -21,5 +21,5 @@ jobs:
       - name: Publish Code Coverage
         uses: danhunsaker/clover-reporter-action@v0.2.17-clover
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN}}
           clover-file: ./coverage/clover.xml
