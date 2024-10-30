@@ -19,3 +19,4 @@ resulting in a `Result<T, Error>`
 
 - Added a default export to both result and option
 - Added ability to call result.err with no parameters
+- Added utility function `fromPromise`
