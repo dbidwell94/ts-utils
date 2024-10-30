@@ -169,3 +169,9 @@ export function none<T>(): Option<T> {
 export function some<T>(value: T): Option<T> {
   return buildOption({ value, _marker: MarkerType.Some });
 }
+
+export default {
+  some,
+  none,
+  fromSerializableOption
+}
