@@ -111,4 +111,10 @@ describe("src/utility/result.ts", () => {
 
     expect(() => resultValue.unwrap()).toThrow(Error);
   })
+
+  it("Constructs a Failure<E> error with an Error with no message if err() is called with no parameters", () => {
+    const resultValue = result.err();
+
+    expect(() => resultValue.unwrap()).toThrow(Error);
+  })
 });

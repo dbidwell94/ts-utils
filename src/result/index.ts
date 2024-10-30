@@ -149,6 +149,7 @@ function buildResult<T, E extends Error>(
   };
 }
 
+export function err<T>(): Result<T, Error>;
 export function err<T>(error: string): Result<T, Error>;
 export function err<T, E extends Error = Error>(error: E): Result<T, E>;
 /**
@@ -156,8 +157,11 @@ export function err<T, E extends Error = Error>(error: E): Result<T, E>;
  * @param error The error to wrap in the `Result<T, E>`
  * @returns A `Result<T, E>` type with a `Failure<E>` inner type
  */
-export function err<T, E extends Error = Error>(error: E | string): Result<T, E> {
-  if (typeof error === "string") {
+export function err<T, E extends Error = Error>(error?: E | string): Result<T, E> {
+  if (!error) {
+    return buildResult({ error: new Error() } as Failure<E>, MarkerType.Failure);
+  }
+  else if (typeof error === "string") {
     return buildResult({ error: new Error(error) } as Failure<E>, MarkerType.Failure);
   } else {
     return buildResult({ error } as Failure<E>, MarkerType.Failure);
