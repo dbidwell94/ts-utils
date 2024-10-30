@@ -15,3 +15,7 @@ the `Success<T>` alone.
 - Added the ability to invoke `err` with a string type,
 resulting in a `Result<T, Error>`
 
+## [0.4.0]
+
+- Added a default export to both result and option
+- Added ability to call result.err with no parameters
