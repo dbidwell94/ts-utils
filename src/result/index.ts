@@ -177,3 +177,8 @@ export function ok<T, E extends Error = Error>(value: T): Result<T, E> {
 
   return buildResult(innerType, MarkerType.Success);
 }
+
+export default {
+  err,
+  ok
+}
