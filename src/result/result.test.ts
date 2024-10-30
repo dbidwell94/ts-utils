@@ -1,4 +1,4 @@
-import result from ".";
+import result, { UnknownError } from ".";
 
 class NewErrorClass extends Error {
   constructor() {
@@ -110,11 +110,31 @@ describe("src/utility/result.ts", () => {
     const resultValue = result.err("This is an error");
 
     expect(() => resultValue.unwrap()).toThrow(Error);
-  })
+  });
 
   it("Constructs a Failure<E> error with an Error with no message if err() is called with no parameters", () => {
     const resultValue = result.err();
 
     expect(() => resultValue.unwrap()).toThrow(Error);
-  })
+  });
+
+  it("Constructs a Result<T> from a promise when calling fromPromise() with a promise that resolves", async () => {
+    const resultValue = await result.fromPromise(Promise.resolve(3));
+
+    expect(resultValue.unwrap()).toEqual(3);
+  });
+
+  it("Constructs a Result<T> from a promise when calling fromPromise() with a promise that rejects", async () => {
+    const resultValue = await result.fromPromise(
+      Promise.reject(new NewErrorClass())
+    );
+
+    expect(() => resultValue.unwrap()).toThrow(NewErrorClass);
+  });
+
+  it("Constructs a Result<T> from a promise that throws something other than an Error", async () => {
+    const resultValue = await result.fromPromise(Promise.reject(2));
+
+    expect(() => resultValue.unwrap()).toThrow(UnknownError);
+  });
 });
