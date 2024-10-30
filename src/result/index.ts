@@ -219,7 +219,10 @@ export async function fromPromise<T>(
   }
 }
 
-export default {
+/**
+ * Represents the `Result<T, E>` module exported from the `result` package all packaged under one namespace.
+ */
+export const result = {
   err,
   ok,
   fromPromise,
