@@ -2,14 +2,20 @@
   "name": "@dbidwell94/ts-utils",
   "version": "0.3.0",
   "description": "A collection of helpful TypeScript utilities with the aim of having limited production dependencies.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dbidwell94/ts-utils.git"
   },
   "scripts": {
     "test": "jest",
-    "build": "rimraf dist && tsc && cp package.json dist/package.json && cp README.md dist/README.md && cp LICENSE dist/LICENSE"
+    "build": "rimraf dist && tsc"
   },
   "keywords": [
     "rust",
