@@ -1,6 +1,18 @@
 import { none, Option, some } from "../option";
 
 /**
+ * Represents an unknown error type that is not an instance of `Error`
+ * Useful when you are catching an error in try/catch but the error is not an instance of `Error`
+ */
+export class UnknownError extends Error {
+  unknownError: any;
+  constructor(unknownError: any) {
+    super();
+    this.unknownError = unknownError;
+  }
+}
+
+/**
  * Represents the two possible inner types of a `Result<T, E>`
  */
 enum MarkerType {
@@ -149,6 +161,7 @@ function buildResult<T, E extends Error>(
   };
 }
 
+export function err<T>(): Result<T, Error>;
 export function err<T>(error: string): Result<T, Error>;
 export function err<T, E extends Error = Error>(error: E): Result<T, E>;
 /**
@@ -156,13 +169,22 @@ export function err<T, E extends Error = Error>(error: E): Result<T, E>;
  * @param error The error to wrap in the `Result<T, E>`
  * @returns A `Result<T, E>` type with a `Failure<E>` inner type
  */
-export function err<T, E extends Error = Error>(error: E | string): Result<T, E> {
-  if (typeof error === "string") {
-    return buildResult({ error: new Error(error) } as Failure<E>, MarkerType.Failure);
+export function err<T, E extends Error = Error>(
+  error?: E | string
+): Result<T, E> {
+  if (!error) {
+    return buildResult(
+      { error: new Error() } as Failure<E>,
+      MarkerType.Failure
+    );
+  } else if (typeof error === "string") {
+    return buildResult(
+      { error: new Error(error) } as Failure<E>,
+      MarkerType.Failure
+    );
   } else {
     return buildResult({ error } as Failure<E>, MarkerType.Failure);
   }
-
 }
 
 /**
@@ -177,3 +199,28 @@ export function ok<T, E extends Error = Error>(value: T): Result<T, E> {
 
   return buildResult(innerType, MarkerType.Success);
 }
+
+/**
+ * Constructs a `Result<T, E>` type from a `Promise<T>`. The `Result<T, E>` will be a `Success<T>` if the `Promise<T>` resolves, otherwise a `Failure<E>` if the `Promise<T>` rejects.
+ * @param promise The `Promise<T>` to convert to a `Result<T, E>`
+ * @returns A `Result<T, E>` type with a `Success<T>` inner type if the `Promise<T>` resolves, otherwise a `Failure<E>` inner type if the `Promise<T>` rejects
+ */
+export async function fromPromise<T>(
+  promise: Promise<T>
+): Promise<Result<T, Error>> {
+  try {
+    const value = await promise;
+    return ok(value);
+  } catch (error) {
+    if (error instanceof Error) {
+      return err(error);
+    }
+    return err(new UnknownError(error));
+  }
+}
+
+export default {
+  err,
+  ok,
+  fromPromise,
+};
