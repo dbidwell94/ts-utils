@@ -17,12 +17,12 @@ npm install @dbidwell94/ts-utils
 The `Option<T>` type is used to represent a value that can either be `Some(value)` or `None`. This is useful for scenarios where a value may or may not be present.
 
 ```typescript
-import { Option, some, none } from '@dbidwell94/ts-utils';
+import { Option, option } from '@dbidwell94/ts-utils';
 
 // Example usage
 function findUserById(id: string): Option<User> {
     const user = database.find(user => user.id === id);
-    return user ? some(user) : none();
+    return user ? option.some(user) : option.none();
 }
 
 const userOption = findUserById('123');
@@ -39,19 +39,19 @@ if (userOption.isSome()) {
 The `Result<T, E>` type is used to represent the result of an operation that can either succeed with a value of type `T` or fail with an error of type `E`. This is ideal for handling operations that can fail.
 
 ```typescript
-import { Result, ok, err } from '@dbidwell94/ts-utils';
+import { Result, result } from '@dbidwell94/ts-utils';
 
 // Example usage
 function divide(a: number, b: number): Result<number> { // Result<T> can be used instead of `Result<T, Error>`, however you can make the 2nd type param anything that extends `Error`
     if (b === 0) {
-        return err(new Error('Cannot divide by zero'));
+        return result.err("Cannot divide by zero");
     }
-    return ok(a / b);
+    return result.ok(a / b);
 }
 
-const result = divide(10, 0);
+const divideResult = divide(10, 0);
 
-if (result.isOk()) {
+if (divideResult.isOk()) {
     console.log(`Result: ${result.value}`);
 } else {
     console.error(`Error: ${result.error}`);
