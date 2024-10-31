@@ -1,4 +1,4 @@
-import option, { OptionIsEmptyError } from ".";
+import { OptionIsEmptyError, option } from ".";
 
 describe("src/utility/option.ts", () => {
   it("Constructs an Option<T> type with a provided value", () => {

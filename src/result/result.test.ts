@@ -1,4 +1,4 @@
-import result, { UnknownError } from ".";
+import { UnknownError, result } from ".";
 
 class NewErrorClass extends Error {
   constructor() {

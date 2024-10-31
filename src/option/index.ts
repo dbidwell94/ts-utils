@@ -170,8 +170,11 @@ export function some<T>(value: T): Option<T> {
   return buildOption({ value, _marker: MarkerType.Some });
 }
 
-export default {
+/**
+ * Represents the `Option<T>` module exported from the `option` package all packaged under one namespace.
+ */
+export const option = {
   some,
   none,
-  fromSerializableOption
-}
+  fromSerializableOption,
+};
