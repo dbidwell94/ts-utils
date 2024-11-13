@@ -144,12 +144,12 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
  * @returns An Option<T> with all the data from the SerializableOption<T> plus the utility functions
  */
 export function fromSerializableOption<T>(
-  option: SerializableOption<T>
+  option?: SerializableOption<T>
 ): Option<T> {
-  if (option._marker === MarkerType.None) {
-    return none();
-  } else {
+  if (option && option._marker === MarkerType.Some) {
     return some(option.value);
+  } else {
+    return none();
   }
 }
 

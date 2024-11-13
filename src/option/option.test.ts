@@ -117,6 +117,23 @@ describe("src/utility/option.ts", () => {
 
     const noneSerializable = option.none().serialize();
 
-    expect(option.fromSerializableOption(noneSerializable).isNone()).toBeTruthy();
+    expect(
+      option.fromSerializableOption(noneSerializable).isNone()
+    ).toBeTruthy();
   });
+
+  it("Returns a None type if `fromSerializableOption()` is called with no object or undefined", () => {
+    const result = option.fromSerializableOption(undefined);
+
+    expect(result.isNone()).toBeTruthy();
+  });
+
+  it.each([[1], [{}], ["testString"], [[]]])(
+    "Returns a None type if `fromSerializableOption()` is called with a non-Option<T> type",
+    (testValue) => {
+      const result = option.fromSerializableOption(testValue as never);
+
+      expect(result.isNone()).toBeTruthy();
+    }
+  );
 });
