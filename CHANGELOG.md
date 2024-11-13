@@ -34,3 +34,7 @@
   - If undefined is provided, a `None` type is returned.
 - Changed conditional for `fromSerializableOption` to be more resilient with
   possibly bad types passed as a parameter
+
+## [0.5.1]
+
+- Update CI/CD publish workflow (No code functionality changes)
