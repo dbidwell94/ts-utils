@@ -27,3 +27,10 @@
   - Option exported as `import { option } from '@dbidwell94/ts-utils'`
   - Result exported as `import { result } from '@dbidwell94/ts-utils'`
 - Added documentation around the named result and option export namespaces
+
+## [0.5.0]
+
+- Changed function signature of `fromSerializableOption` to accept a possibly undefined object
+  - If undefined is provided, a `None` type is returned.
+- Changed conditional for `fromSerializableOption` to be more resilient with
+  possibly bad types passed as a parameter
