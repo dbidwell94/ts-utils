@@ -1,4 +1,5 @@
 import { OptionIsEmptyError, option } from ".";
+import { result } from "../result";
 
 describe("src/utility/option.ts", () => {
   it("Constructs an Option<T> type with a provided value", () => {
@@ -69,6 +70,12 @@ describe("src/utility/option.ts", () => {
     expect(optionValue.okOr(new Error()).isOk()).toBeTruthy();
   });
 
+  it("Constructs a base Error class if okOr() is called with a string type", () => {
+    const optionValue = option.none();
+
+    expect(optionValue.okOr("This is an error").isError()).toBeTruthy();
+  })
+
   it("Throws an error using the provided message when calling expect() on a None type", () => {
     const optionValue = option.none();
 
@@ -136,4 +143,12 @@ describe("src/utility/option.ts", () => {
       expect(result.isNone()).toBeTruthy();
     }
   );
+
+  it("Performs andThen on a Some<T> type, returning a new Option<NewT>", () => {
+    const optionValue = option.some(1);
+
+    const newOption = optionValue.andThen(val => option.some(val + 1));
+
+    expect(newOption.unwrap()).toEqual(2);
+  });
 });

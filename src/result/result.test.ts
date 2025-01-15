@@ -137,4 +137,12 @@ describe("src/utility/result.ts", () => {
 
     expect(() => resultValue.unwrap()).toThrow(UnknownError);
   });
+
+  it("Constructs a Result<T, E> from a Result containing a promise that resolves", async () => {
+    const resultValue = result.ok(Promise.resolve(3));
+
+    const finalResult = await result.fromPromise(resultValue);
+
+    expect(finalResult.unwrap()).toEqual(3);
+  })
 });

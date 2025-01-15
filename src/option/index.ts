@@ -69,12 +69,19 @@ interface OptionUtils<T> {
    * @returns A `Result<T, E>` type.
    */
   okOr<E extends Error>(error: E): Result<T, E>;
+  okOr<E extends Error>(error: string): Result<T, Error>;
+  okOr<E extends Error>(error: Error | string): Result<T, E>;
   /**
    * Maps the inner value of the Option<T> to a new value, returning a completely new Option<NewT>
    * @param mapFn The function which will be called if the Option<T> is a Some<T>
    * @returns A new Option<NewT> with the mapped value
    */
   map<NewT>(mapFn: (option: T) => NewT): Option<NewT>;
+  /**
+   * Flat maps the inner value of the Option<T> to a new Option<NewT>
+   * @param mapFn The function which will be called if the Option<T> is a Some<T>
+   */
+  andThen<NewT>(mapFn: (option: T) => Option<NewT>): Option<NewT>;
   /**
    * A utility function to convert an Option<T> to a SerializableOption<T>. This is a useful function if you wish to store
    * an Option<T> in Redux, as Redux does not allow non-serializable fields (functions) in its store.
@@ -117,7 +124,10 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
       throw new OptionIsEmptyError(message);
     },
     okOr(error) {
-      if (this.isNone()) return err(error);
+      if (this.isNone()) {
+        if (error instanceof Error) return err(error);
+        return err(new Error(error));
+      }
       return ok(this.value);
     },
     map(mapFn) {
@@ -125,6 +135,12 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
         return none();
       }
       return some(mapFn(this.value));
+    },
+    andThen(mapFn) {
+      if (this.isNone()) {
+        return none();
+      }
+      return mapFn(this.value);
     },
     serialize(): SerializableOption<T> {
       if (this.isNone()) {
