@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.0]
+
+- Add new utility function `andThen` for both `Result` and `Option` types
+- Added function overload for `fromPromise` which will convert a `Result<Promise<T>, E>` to a `Promise<Result<T, E>>`
+
 ## [0.5.2]
 
 - Upgrade dev dependencies and fix dev audit issue
