@@ -151,4 +151,12 @@ describe("src/utility/option.ts", () => {
 
     expect(newOption.unwrap()).toEqual(2);
   });
+
+  it("Does not perform andThen on a None type, returning a None type", () => {
+    const optionValue = option.none<number>();
+
+    const newOption = optionValue.andThen(val => option.some(val + 1));
+
+    expect(newOption.isNone()).toBeTruthy();
+  });
 });

@@ -159,4 +159,20 @@ describe("src/utility/result.ts", () => {
 
     expect(finalResult.unwrap()).toEqual(3);
   });
+
+  it("Constructs a Result<T, E> from a Result containing a promise that rejects", async () => {
+    const resultValue = result.ok(Promise.reject(new NewErrorClass()));
+
+    const finalResult = await result.fromPromise(resultValue);
+
+    expect(() => finalResult.unwrap()).toThrow(NewErrorClass);
+  });
+
+  it("Constructs a Result<T, E> from a Result that is of a Failure<E> type", async () => {
+    const resultValue = result.err<Promise<number>>(new Error());
+
+    const finalResult = await result.fromPromise(resultValue);
+
+    expect(finalResult.isError()).toBeTruthy();
+  });
 });
