@@ -92,6 +92,20 @@ describe("src/utility/result.ts", () => {
     expect(resultValue.mapOk((x) => x * 2).isError()).toBeTruthy();
   });
 
+  it("Maps the Success<T> value to a new Result<NewT, E> if andThen() is called on a Success<T> type", () => {
+    const resultValue = result.ok(2);
+
+    expect(
+      resultValue.andThen((x) => result.ok(x.toString())).unwrap()
+    ).toEqual("2");
+  });
+
+  it("Does not map the Success<T> value if andThen() is called on a Failure<E> type", () => {
+    const resultValue = result.err<number>(new Error());
+
+    expect(resultValue.andThen((x) => result.ok(x * 2)).isError()).toBeTruthy();
+  });
+
   it("Maps the Failure<E> error to a new error if mapErr() is called on a Failure<E> type", () => {
     const resultValue = result.err(new Error());
 
@@ -136,5 +150,29 @@ describe("src/utility/result.ts", () => {
     const resultValue = await result.fromPromise(Promise.reject(2));
 
     expect(() => resultValue.unwrap()).toThrow(UnknownError);
+  });
+
+  it("Constructs a Result<T, E> from a Result containing a promise that resolves", async () => {
+    const resultValue = result.ok(Promise.resolve(3));
+
+    const finalResult = await result.fromPromise(resultValue);
+
+    expect(finalResult.unwrap()).toEqual(3);
+  });
+
+  it("Constructs a Result<T, E> from a Result containing a promise that rejects", async () => {
+    const resultValue = result.ok(Promise.reject(new NewErrorClass()));
+
+    const finalResult = await result.fromPromise(resultValue);
+
+    expect(() => finalResult.unwrap()).toThrow(NewErrorClass);
+  });
+
+  it("Constructs a Result<T, E> from a Result that is of a Failure<E> type", async () => {
+    const resultValue = result.err<Promise<number>>(new Error());
+
+    const finalResult = await result.fromPromise(resultValue);
+
+    expect(finalResult.isError()).toBeTruthy();
   });
 });

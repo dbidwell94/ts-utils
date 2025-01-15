@@ -88,6 +88,12 @@ interface ResultUtils<T, E extends Error = Error> {
    */
   mapOk<NewT>(fn: (value: T) => NewT): Result<NewT, E>;
   /**
+   * Maps a `Result<T, E>` to `Result<NewT, E>` by applying a function to a contained `Success<T>` value, leaving an `Error<E>` value untouched.
+   * The resulting `Result<NewT, E>` is then flattened to avoid nested Result types.
+   * @param fn - The function to apply to the inner value
+   */
+  andThen<NewT>(fn: (value: T) => Result<NewT, E>): Result<NewT, E>;
+  /**
    * Maps a `Result<T, E>` to `Result<T, NewE>` by applying a function to a contained `Error<E>` value, leaving a `Success<T>` value untouched.
    * @param fn - The function to apply to the inner error
    */
@@ -152,6 +158,12 @@ function buildResult<T, E extends Error>(
       }
       return err(this.error);
     },
+    andThen<NewT>(fn: (value: T) => Result<NewT, E>): Result<NewT, E> {
+      if (this.isOk()) {
+        return fn(this.value);
+      }
+      return err(this.error);
+    },
     mapErr<NewE extends Error>(fn: (error: E) => NewE): Result<T, NewE> {
       if (this.isError()) {
         return err(fn(this.error));
@@ -201,21 +213,43 @@ export function ok<T, E extends Error = Error>(value: T): Result<T, E> {
 }
 
 /**
- * Constructs a `Result<T, E>` type from a `Promise<T>`. The `Result<T, E>` will be a `Success<T>` if the `Promise<T>` resolves, otherwise a `Failure<E>` if the `Promise<T>` rejects.
- * @param promise The `Promise<T>` to convert to a `Result<T, E>`
- * @returns A `Result<T, E>` type with a `Success<T>` inner type if the `Promise<T>` resolves, otherwise a `Failure<E>` inner type if the `Promise<T>` rejects
+ * Constructs a `Result<T, E>` type from a `Result<Promise<T>, E>`. The `Result<T, E>` will be a `Success<T>` if the `Promise<T>` resolves,
+ * otherwise a `Failure<E>` if the `Promise<T>` rejects.
+ * @param val The `Result<Promise<T>, E>` to convert to a `Promise<Result<T, E>>`
  */
-export async function fromPromise<T>(
-  promise: Promise<T>
-): Promise<Result<T, Error>> {
+export async function fromPromise<T, E extends Error>(
+  val: Result<Promise<T>, E>
+): Promise<Result<T, E>>;
+/**
+ * Constructs a `Result<T, E>` type from a `Promise<T>`. The `Result<T, E>` will be a `Success<T>` if the `Promise<T>` resolves,
+ * otherwise a `Failure<E>` if the `Promise<T>` rejects.
+ * @param val The `Promise<T>` to convert to a `Promise<Result<T, E>>`
+ */
+export async function fromPromise<T, E extends Error = Error>(
+  val: Promise<T>
+): Promise<Result<T, E>>;
+export async function fromPromise<T, E extends Error = Error>(
+  val: Promise<T> | Result<Promise<T>, E>
+): Promise<Result<T, E | Error>> {
+  let promise: Promise<T>;
+
+  if (!(val instanceof Promise)) {
+    if (val.isError()) {
+      return err(val.error);
+    }
+    promise = val.value;
+  } else {
+    promise = val;
+  }
+
   try {
     const value = await promise;
     return ok(value);
   } catch (error) {
     if (error instanceof Error) {
-      return err(error);
+      return err(error) as Result<T, Error>;
     }
-    return err(new UnknownError(error));
+    return err(new UnknownError(error)) as Result<T, Error>;
   }
 }
 
