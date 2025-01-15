@@ -88,6 +88,12 @@ interface ResultUtils<T, E extends Error = Error> {
    */
   mapOk<NewT>(fn: (value: T) => NewT): Result<NewT, E>;
   /**
+   * Maps a `Result<T, E>` to `Result<NewT, E>` by applying a function to a contained `Success<T>` value, leaving an `Error<E>` value untouched.
+   * The resulting `Result<NewT, E>` is then flattened to avoid nested Result types.
+   * @param fn - The function to apply to the inner value
+   */
+  andThen<NewT>(fn: (value: T) => Result<NewT, E>): Result<NewT, E>;
+  /**
    * Maps a `Result<T, E>` to `Result<T, NewE>` by applying a function to a contained `Error<E>` value, leaving a `Success<T>` value untouched.
    * @param fn - The function to apply to the inner error
    */
@@ -149,6 +155,12 @@ function buildResult<T, E extends Error>(
     mapOk<NewT>(fn: (value: T) => NewT): Result<NewT, E> {
       if (this.isOk()) {
         return ok(fn(this.value));
+      }
+      return err(this.error);
+    },
+    andThen<NewT>(fn: (value: T) => Result<NewT, E>): Result<NewT, E> {
+      if (this.isOk()) {
+        return fn(this.value);
       }
       return err(this.error);
     },

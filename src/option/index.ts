@@ -78,7 +78,8 @@ interface OptionUtils<T> {
    */
   map<NewT>(mapFn: (option: T) => NewT): Option<NewT>;
   /**
-   * Flat maps the inner value of the Option<T> to a new Option<NewT>
+   * maps the value of this Option<T> to a Option<NewT> using the provided function. This is useful if you wish to chain
+   * multiple Option<T> types together. Flattens the Option<Option<NewT>> to an Option<NewT>
    * @param mapFn The function which will be called if the Option<T> is a Some<T>
    */
   andThen<NewT>(mapFn: (option: T) => Option<NewT>): Option<NewT>;
