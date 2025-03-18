@@ -74,7 +74,7 @@ describe("src/utility/option.ts", () => {
     const optionValue = option.none();
 
     expect(optionValue.okOr("This is an error").isError()).toBeTruthy();
-  })
+  });
 
   it("Throws an error using the provided message when calling expect() on a None type", () => {
     const optionValue = option.none();
@@ -147,7 +147,7 @@ describe("src/utility/option.ts", () => {
   it("Performs andThen on a Some<T> type, returning a new Option<NewT>", () => {
     const optionValue = option.some(1);
 
-    const newOption = optionValue.andThen(val => option.some(val + 1));
+    const newOption = optionValue.andThen((val) => option.some(val + 1));
 
     expect(newOption.unwrap()).toEqual(2);
   });
@@ -155,8 +155,18 @@ describe("src/utility/option.ts", () => {
   it("Does not perform andThen on a None type, returning a None type", () => {
     const optionValue = option.none<number>();
 
-    const newOption = optionValue.andThen(val => option.some(val + 1));
+    const newOption = optionValue.andThen((val) => option.some(val + 1));
 
     expect(newOption.isNone()).toBeTruthy();
+  });
+
+  it("Constructs an Option<T> type from an unknown value, returning a Some<T> if the value is not null or undefined, otherwise returning None", () => {
+    const testValue = "test";
+    const result = option.unknown(testValue);
+    expect(result.isSome()).toBeTruthy();
+    expect(result.unwrap()).toEqual(testValue);
+    const nullValue: unknown = null;
+    const nullResult = option.unknown(nullValue);
+    expect(nullResult.isNone()).toBeTruthy();
   });
 });

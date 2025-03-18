@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1]
+- Add new utility function `unknown` to the `Option` namespace
+  - This function constructs an `Option<T>` type from an unknown value, returning a `Some<T>` if the value is not null or undefined, otherwise returning `None`
+
 ## [0.6.0]
 
 - Add new utility function `andThen` for both `Result` and `Option` types
