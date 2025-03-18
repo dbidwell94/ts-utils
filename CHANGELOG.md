@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.2]
+- Refactor `unknown` function signature to accept optional or null parameters
+  - This change allows for more flexible usage of the `unknown` function when dealing with potentially null or undefined values
+- Add documentation for the `unknown` function
+
 ## [0.6.1]
 - Add new utility function `unknown` to the `Option` namespace
   - This function constructs an `Option<T>` type from an unknown value, returning a `Some<T>` if the value is not null or undefined, otherwise returning `None`
