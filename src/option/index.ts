@@ -187,7 +187,12 @@ export function some<T>(value: T): Option<T> {
   return buildOption({ value, _marker: MarkerType.Some });
 }
 
-export function unknown<T>(value: T): Option<T> {
+/**
+ * Constructs an `Option<T>` type with a provided value and a marker indicating that it is a Some.
+ * @param value The value to store in the `Option<T>`.
+ * @returns An `Option<T>` type with the provided value and a marker indicating that it is a Some.
+ */
+export function unknown<T>(value?: T | null): Option<T> {
   if (value === undefined || value === null) {
     return none();
   }
