@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.3]
+- Update dev-dependencies to latest versions to resolve audit issues
+  - Update `ts-jest` to version 29.2.6
+  - Update `typescript` to version 5.8.2
+
 ## [0.6.2]
 - Refactor `unknown` function signature to accept optional or null parameters
   - This change allows for more flexible usage of the `unknown` function when dealing with potentially null or undefined values
