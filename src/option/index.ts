@@ -187,11 +187,19 @@ export function some<T>(value: T): Option<T> {
   return buildOption({ value, _marker: MarkerType.Some });
 }
 
+export function unknown<T>(value: T): Option<T> {
+  if (value === undefined || value === null) {
+    return none();
+  }
+  return some(value);
+}
+
 /**
  * Represents the `Option<T>` module exported from the `option` package all packaged under one namespace.
  */
 export const option = {
   some,
   none,
+  unknown,
   fromSerializableOption,
 };
