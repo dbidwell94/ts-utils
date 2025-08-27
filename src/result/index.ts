@@ -1,4 +1,4 @@
-import { none, Option, some } from "../option";
+import { option, Option } from "../option";
 
 /**
  * Represents an unknown error type that is not an instance of `Error`
@@ -40,7 +40,7 @@ export type Failure<E extends Error = Error> = {
   readonly error: E;
 };
 
-interface ResultUtils<T, E extends Error = Error> {
+export interface ResultUtils<T, E extends Error = Error> {
   /**
    * Utility function to determine if the inner type is a `Failure<E>`
    * @returns `true` if the inner type is a `Failure<E>`, otherwise `false`
@@ -142,15 +142,15 @@ function buildResult<T, E extends Error>(
     },
     ok(): Option<T> {
       if (this.isOk()) {
-        return some(this.value);
+        return option.some(this.value);
       }
-      return none();
+      return option.none();
     },
     err(): Option<E> {
       if (this.isError()) {
-        return some(this.error);
+        return option.some(this.error);
       }
-      return none();
+      return option.none();
     },
     mapOk<NewT>(fn: (value: T) => NewT): Result<NewT, E> {
       if (this.isOk()) {
@@ -173,17 +173,15 @@ function buildResult<T, E extends Error>(
   };
 }
 
-export function err<T>(): Result<T, Error>;
-export function err<T>(error: string): Result<T, Error>;
-export function err<T, E extends Error = Error>(error: E): Result<T, E>;
+function err<T>(): Result<T, Error>;
+function err<T>(error: string): Result<T, Error>;
+function err<T, E extends Error = Error>(error: E): Result<T, E>;
 /**
  * Constructs a `Result<T, E>` type with a `Failure<E>` inner type.
  * @param error The error to wrap in the `Result<T, E>`
  * @returns A `Result<T, E>` type with a `Failure<E>` inner type
  */
-export function err<T, E extends Error = Error>(
-  error?: E | string,
-): Result<T, E> {
+function err<T, E extends Error = Error>(error?: E | string): Result<T, E> {
   if (!error) {
     return buildResult(
       { error: new Error() } as Failure<E>,
@@ -204,7 +202,7 @@ export function err<T, E extends Error = Error>(
  * @param value The value to wrap in the `Result<T, E>`
  * @returns A `Result<T, E>` type with a `Success<T>` inner type
  */
-export function ok<T, E extends Error = Error>(value: T): Result<T, E> {
+function ok<T, E extends Error = Error>(value: T): Result<T, E> {
   const innerType: Success<T> = {
     value,
   };
@@ -217,7 +215,7 @@ export function ok<T, E extends Error = Error>(value: T): Result<T, E> {
  * otherwise a `Failure<E>` if the `Promise<T>` rejects.
  * @param val The `Result<Promise<T>, E>` to convert to a `Promise<Result<T, E>>`
  */
-export async function fromPromise<T, E extends Error>(
+async function fromPromise<T, E extends Error>(
   val: Result<Promise<T>, E>,
 ): Promise<Result<T, E>>;
 /**
@@ -225,10 +223,10 @@ export async function fromPromise<T, E extends Error>(
  * otherwise a `Failure<E>` if the `Promise<T>` rejects.
  * @param val The `Promise<T>` to convert to a `Promise<Result<T, E>>`
  */
-export async function fromPromise<T, E extends Error = Error>(
+async function fromPromise<T, E extends Error = Error>(
   val: Promise<T>,
 ): Promise<Result<T, E>>;
-export async function fromPromise<T, E extends Error = Error>(
+async function fromPromise<T, E extends Error = Error>(
   val: Promise<T> | Result<Promise<T>, E>,
 ): Promise<Result<T, E | Error>> {
   let promise: Promise<T>;

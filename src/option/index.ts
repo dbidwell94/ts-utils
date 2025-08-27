@@ -1,4 +1,4 @@
-import { err, ok, Result } from "../result";
+import { Result, result } from "../result";
 
 enum MarkerType {
   Some,
@@ -19,6 +19,7 @@ export class OptionIsEmptyError extends Error {
  * Represents an `Option<T>` type with no value.
  */
 export type None = {
+  /** @ignore */
   readonly _marker: MarkerType.None;
 };
 
@@ -27,12 +28,13 @@ export type None = {
  */
 export type Some<T> = {
   readonly value: T;
+  /** @ignore */
   readonly _marker: MarkerType.Some;
 };
 
 export type SerializableOption<T> = None | Some<T>;
 
-interface OptionUtils<T> {
+export interface OptionUtils<T> {
   /**
    * Utility function to determine whether this `Option<T>` type is a `Some` type.
    * @returns `true` if the `Option<T>` is a `Some<T>`, otherwise `false`.
@@ -126,10 +128,10 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
     },
     okOr(error) {
       if (this.isNone()) {
-        if (error instanceof Error) return err(error);
-        return err(new Error(error));
+        if (error instanceof Error) return result.err(error);
+        return result.err(new Error(error));
       }
-      return ok(this.value);
+      return result.ok(this.value);
     },
     map(mapFn) {
       if (this.isNone()) {
@@ -160,9 +162,7 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
  * @param option A serializable option which can be converted into JSON.
  * @returns An Option<T> with all the data from the SerializableOption<T> plus the utility functions
  */
-export function fromSerializableOption<T>(
-  option?: SerializableOption<T>,
-): Option<T> {
+function fromSerializableOption<T>(option?: SerializableOption<T>): Option<T> {
   if (option && option._marker === MarkerType.Some) {
     return some(option.value);
   } else {
@@ -174,7 +174,7 @@ export function fromSerializableOption<T>(
  * Constructs an `Option<T>` type with no value.
  * @returns An `Option<T>` type with no value.
  */
-export function none<T>(): Option<T> {
+function none<T>(): Option<T> {
   return buildOption({ _marker: MarkerType.None });
 }
 
@@ -183,7 +183,7 @@ export function none<T>(): Option<T> {
  * @param value The value to store in the `Option<T>`.
  * @returns An `Option<T>` type with the provided value.
  */
-export function some<T>(value: T): Option<T> {
+function some<T>(value: T): Option<T> {
   return buildOption({ value, _marker: MarkerType.Some });
 }
 
@@ -192,7 +192,7 @@ export function some<T>(value: T): Option<T> {
  * @param value The value to store in the `Option<T>`.
  * @returns An `Option<T>` type with the provided value and a marker indicating that it is a Some.
  */
-export function unknown<T>(value?: T | null): Option<T> {
+function unknown<T>(value?: T | null): Option<T> {
   if (value === undefined || value === null) {
     return none();
   }
@@ -205,17 +205,15 @@ export function unknown<T>(value?: T | null): Option<T> {
  * @param input - A `SerializableOption`
  * @returns Whether or not the input is `None`
  */
-export function isNone<T>(input: SerializableOption<T>): input is None;
+function isNone<T>(input: SerializableOption<T>): input is None;
 /**
  * A static helper function to check if an input is `None`. Useful if you want to check a `SerializableOption`
  * without re-serializing into an `Option`.
  * @param input - An `Option`
  * @returns Whether or not the input is `None`
  */
-export function isNone<T>(input: Option<T>): input is None & OptionUtils<T>;
-export function isNone<T>(
-  input: Option<T> | SerializableOption<T>,
-): input is None {
+function isNone<T>(input: Option<T>): input is None & OptionUtils<T>;
+function isNone<T>(input: Option<T> | SerializableOption<T>): input is None {
   return input._marker === MarkerType.None;
 }
 
@@ -225,17 +223,15 @@ export function isNone<T>(
  * @param input - A `SerializableOption`
  * @returns Whether or not the input is `Some<T>`
  */
-export function isSome<T>(input: SerializableOption<T>): input is Some<T>;
+function isSome<T>(input: SerializableOption<T>): input is Some<T>;
 /**
  * A static helper function to check if an input is `Some<T>`. Useful if you want to check a `SerializableOption`
  * without re-serializing into an `Option`.
  * @param input - An `Option`
  * @returns Whether or not the input is `Some<T>`
  */
-export function isSome<T>(input: Option<T>): input is Some<T> & OptionUtils<T>;
-export function isSome<T>(
-  input: Option<T> | SerializableOption<T>,
-): input is Some<T> {
+function isSome<T>(input: Option<T>): input is Some<T> & OptionUtils<T>;
+function isSome<T>(input: Option<T> | SerializableOption<T>): input is Some<T> {
   return input._marker === MarkerType.Some;
 }
 
