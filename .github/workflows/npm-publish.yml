@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  publish-docs:
+  build-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,17 +17,33 @@ jobs:
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm run doc
-      - name: Deploy to Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Install and Build Docs
+        run: |
+          npm ci
+          npm run doc
+      - name: Upload Static Files as Artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
         with:
-          folder: docs
-          token: ${{ secrets.GH_TOKEN}}
+          path: docs/
+
+  publish-pages:
+    needs: build-docs
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   publish-npm:
     needs:
-      - publish-docs
+      - publish-pages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
