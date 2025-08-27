@@ -169,27 +169,20 @@ describe("src/utility/option.ts", () => {
     expect(nullResult.isNone()).toBeTruthy();
   });
 
-  it("Properly types the return value of the global isSome function with a SerializableOption<T> param", () => {
-    const opt = option.some(123).serialize();
-
-    expect(option.isSome(opt)).toBeTruthy();
-  });
-
-  it("Properly types the return value of the global isSome function with an Option<T> param", () => {
-    const opt = option.some(123);
-
-    expect(option.isSome(opt)).toBeTruthy();
-  });
-
-  it("Properly types the return value of the global isNone function with an Option<T> param", () => {
-    const opt = option.none();
-
-    expect(option.isNone(opt)).toBeTruthy();
-  });
-
-  it("Properly types the return value of the global isNone function with a SerializableOption<T> param", () => {
-    const opt = option.none().serialize();
-
-    expect(option.isNone(opt)).toBeTruthy();
+  it.each([
+    ["option.some", option.some(123), option.isSome as (val: any) => boolean],
+    [
+      "option.some.serialize",
+      option.some(123).serialize(),
+      option.isSome as (val: any) => boolean,
+    ],
+    ["option.none", option.none(), option.isNone as (val: any) => boolean],
+    [
+      "option.none.serialize",
+      option.none().serialize(),
+      option.isNone as (val: any) => boolean,
+    ],
+  ])("Properly checks the return type of %s", (_, optVal, validator) => {
+    expect(validator(optVal)).toBeTruthy();
   });
 });

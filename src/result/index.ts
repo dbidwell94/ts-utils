@@ -1,4 +1,4 @@
-import { none, option, Option, some } from "../option";
+import { none, Option, some } from "../option";
 
 /**
  * Represents an unknown error type that is not an instance of `Error`

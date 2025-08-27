@@ -201,13 +201,31 @@ export function unknown<T>(value?: T | null): Option<T> {
 
 export function isNone<T>(input: SerializableOption<T>): input is None;
 export function isNone<T>(input: Option<T>): input is None & OptionUtils<T>;
+/**
+ * A static helper function to check if an input is `None`. Useful if you want to check a `SerializableOption`
+ * without re-serializing into an `Option`.
+ * @param input - Either a `SerializableOption` or an `Option`
+ * @returns Whether or not the input is `None`
+ */
 export function isNone<T>(
   input: Option<T> | SerializableOption<T>,
 ): input is None {
   return input._marker === MarkerType.None;
 }
 
+/**
+ * A static helper function to check if an input is `Some<T>`. Useful if you want to check a `SerializableOption`
+ * without re-serializing into an `Option`.
+ * @param input - A `SerializableOption`
+ * @returns Whether or not the input is `Some<T>`
+ */
 export function isSome<T>(input: SerializableOption<T>): input is Some<T>;
+/**
+ * A static helper function to check if an input is `Some<T>`. Useful if you want to check a `SerializableOption`
+ * without re-serializing into an `Option`.
+ * @param input - An `Option`
+ * @returns Whether or not the input is `Some<T>`
+ */
 export function isSome<T>(input: Option<T>): input is Some<T> & OptionUtils<T>;
 export function isSome<T>(
   input: Option<T> | SerializableOption<T>,
