@@ -1,5 +1,4 @@
 import { OptionIsEmptyError, option } from ".";
-import { result } from "../result";
 
 describe("src/utility/option.ts", () => {
   it("Constructs an Option<T> type with a provided value", () => {
@@ -30,7 +29,7 @@ describe("src/utility/option.ts", () => {
     const optionValue = option.none();
 
     expect(() => optionValue.unwrapOr(null as never)).toThrow(
-      OptionIsEmptyError
+      OptionIsEmptyError,
     );
   });
 
@@ -80,7 +79,7 @@ describe("src/utility/option.ts", () => {
     const optionValue = option.none();
 
     expect(() => optionValue.expect("This is an error")).toThrow(
-      "This is an error"
+      "This is an error",
     );
   });
 
@@ -125,7 +124,7 @@ describe("src/utility/option.ts", () => {
     const noneSerializable = option.none().serialize();
 
     expect(
-      option.fromSerializableOption(noneSerializable).isNone()
+      option.fromSerializableOption(noneSerializable).isNone(),
     ).toBeTruthy();
   });
 
@@ -141,7 +140,7 @@ describe("src/utility/option.ts", () => {
       const result = option.fromSerializableOption(testValue as never);
 
       expect(result.isNone()).toBeTruthy();
-    }
+    },
   );
 
   it("Performs andThen on a Some<T> type, returning a new Option<NewT>", () => {
@@ -168,5 +167,22 @@ describe("src/utility/option.ts", () => {
     const nullValue: unknown = null;
     const nullResult = option.unknown(nullValue);
     expect(nullResult.isNone()).toBeTruthy();
+  });
+
+  it.each([
+    ["option.some", option.some(123), option.isSome as (val: any) => boolean],
+    [
+      "option.some.serialize",
+      option.some(123).serialize(),
+      option.isSome as (val: any) => boolean,
+    ],
+    ["option.none", option.none(), option.isNone as (val: any) => boolean],
+    [
+      "option.none.serialize",
+      option.none().serialize(),
+      option.isNone as (val: any) => boolean,
+    ],
+  ])("Properly checks the return type of %s", (_, optVal, validator) => {
+    expect(validator(optVal)).toBeTruthy();
   });
 });

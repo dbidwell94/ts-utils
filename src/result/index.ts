@@ -112,7 +112,7 @@ export type Result<T, E extends Error = Error> = (Success<T> | Failure<E>) &
 
 function buildResult<T, E extends Error>(
   inner: Success<T> | Failure<E>,
-  marker: MarkerType
+  marker: MarkerType,
 ): Result<T, E> {
   return {
     ...inner,
@@ -182,17 +182,17 @@ export function err<T, E extends Error = Error>(error: E): Result<T, E>;
  * @returns A `Result<T, E>` type with a `Failure<E>` inner type
  */
 export function err<T, E extends Error = Error>(
-  error?: E | string
+  error?: E | string,
 ): Result<T, E> {
   if (!error) {
     return buildResult(
       { error: new Error() } as Failure<E>,
-      MarkerType.Failure
+      MarkerType.Failure,
     );
   } else if (typeof error === "string") {
     return buildResult(
       { error: new Error(error) } as Failure<E>,
-      MarkerType.Failure
+      MarkerType.Failure,
     );
   } else {
     return buildResult({ error } as Failure<E>, MarkerType.Failure);
@@ -218,7 +218,7 @@ export function ok<T, E extends Error = Error>(value: T): Result<T, E> {
  * @param val The `Result<Promise<T>, E>` to convert to a `Promise<Result<T, E>>`
  */
 export async function fromPromise<T, E extends Error>(
-  val: Result<Promise<T>, E>
+  val: Result<Promise<T>, E>,
 ): Promise<Result<T, E>>;
 /**
  * Constructs a `Result<T, E>` type from a `Promise<T>`. The `Result<T, E>` will be a `Success<T>` if the `Promise<T>` resolves,
@@ -226,10 +226,10 @@ export async function fromPromise<T, E extends Error>(
  * @param val The `Promise<T>` to convert to a `Promise<Result<T, E>>`
  */
 export async function fromPromise<T, E extends Error = Error>(
-  val: Promise<T>
+  val: Promise<T>,
 ): Promise<Result<T, E>>;
 export async function fromPromise<T, E extends Error = Error>(
-  val: Promise<T> | Result<Promise<T>, E>
+  val: Promise<T> | Result<Promise<T>, E>,
 ): Promise<Result<T, E | Error>> {
   let promise: Promise<T>;
 
