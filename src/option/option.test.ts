@@ -1,5 +1,4 @@
 import { OptionIsEmptyError, option } from ".";
-import { result } from "../result";
 
 describe("src/utility/option.ts", () => {
   it("Constructs an Option<T> type with a provided value", () => {
@@ -30,7 +29,7 @@ describe("src/utility/option.ts", () => {
     const optionValue = option.none();
 
     expect(() => optionValue.unwrapOr(null as never)).toThrow(
-      OptionIsEmptyError
+      OptionIsEmptyError,
     );
   });
 
@@ -80,7 +79,7 @@ describe("src/utility/option.ts", () => {
     const optionValue = option.none();
 
     expect(() => optionValue.expect("This is an error")).toThrow(
-      "This is an error"
+      "This is an error",
     );
   });
 
@@ -125,7 +124,7 @@ describe("src/utility/option.ts", () => {
     const noneSerializable = option.none().serialize();
 
     expect(
-      option.fromSerializableOption(noneSerializable).isNone()
+      option.fromSerializableOption(noneSerializable).isNone(),
     ).toBeTruthy();
   });
 
@@ -141,7 +140,7 @@ describe("src/utility/option.ts", () => {
       const result = option.fromSerializableOption(testValue as never);
 
       expect(result.isNone()).toBeTruthy();
-    }
+    },
   );
 
   it("Performs andThen on a Some<T> type, returning a new Option<NewT>", () => {
@@ -168,5 +167,29 @@ describe("src/utility/option.ts", () => {
     const nullValue: unknown = null;
     const nullResult = option.unknown(nullValue);
     expect(nullResult.isNone()).toBeTruthy();
+  });
+
+  it("Properly types the return value of the global isSome function with a SerializableOption<T> param", () => {
+    const opt = option.some(123).serialize();
+
+    expect(option.isSome(opt)).toBeTruthy();
+  });
+
+  it("Properly types the return value of the global isSome function with an Option<T> param", () => {
+    const opt = option.some(123);
+
+    expect(option.isSome(opt)).toBeTruthy();
+  });
+
+  it("Properly types the return value of the global isNone function with an Option<T> param", () => {
+    const opt = option.none();
+
+    expect(option.isNone(opt)).toBeTruthy();
+  });
+
+  it("Properly types the return value of the global isNone function with a SerializableOption<T> param", () => {
+    const opt = option.none().serialize();
+
+    expect(option.isNone(opt)).toBeTruthy();
   });
 });

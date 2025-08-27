@@ -116,7 +116,7 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
       if (this.isSome()) return this.value;
       if (defaultValue === null || defaultValue === undefined)
         throw new OptionIsEmptyError(
-          "The provided default value was null or undefined."
+          "The provided default value was null or undefined.",
         );
       return defaultValue;
     },
@@ -161,7 +161,7 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
  * @returns An Option<T> with all the data from the SerializableOption<T> plus the utility functions
  */
 export function fromSerializableOption<T>(
-  option?: SerializableOption<T>
+  option?: SerializableOption<T>,
 ): Option<T> {
   if (option && option._marker === MarkerType.Some) {
     return some(option.value);
@@ -199,12 +199,30 @@ export function unknown<T>(value?: T | null): Option<T> {
   return some(value);
 }
 
+export function isNone<T>(input: SerializableOption<T>): input is None;
+export function isNone<T>(input: Option<T>): input is None & OptionUtils<T>;
+export function isNone<T>(
+  input: Option<T> | SerializableOption<T>,
+): input is None {
+  return input._marker === MarkerType.None;
+}
+
+export function isSome<T>(input: SerializableOption<T>): input is Some<T>;
+export function isSome<T>(input: Option<T>): input is Some<T> & OptionUtils<T>;
+export function isSome<T>(
+  input: Option<T> | SerializableOption<T>,
+): input is Some<T> {
+  return input._marker === MarkerType.Some;
+}
+
 /**
  * Represents the `Option<T>` module exported from the `option` package all packaged under one namespace.
  */
 export const option = {
   some,
   none,
+  isSome,
+  isNone,
   unknown,
   fromSerializableOption,
 };
