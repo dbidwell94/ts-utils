@@ -23,8 +23,11 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs
+          token: ${{ secrets.GH_TOKEN}}
 
   publish-npm:
+    needs:
+      - publish-docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
