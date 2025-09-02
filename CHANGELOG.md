@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0]
+
+- Added new unsafe functions to the `Option` type to return unchecked values.
+  - unsafeUnwrap() -- Returns the inner value regardless on if it is `undefined`
+    or `null`
+  - unsafeUnwrapOr() -- Maps the inner value to an optional default value
+    without checking the default value for `null | undefined`
+
 ## [1.0.0]
 
 - Removed multiple named exports from the base library in favor of
