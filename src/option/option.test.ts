@@ -192,9 +192,21 @@ describe("src/utility/option.ts", () => {
     expect(opt.unsafeUnwrap()).toEqual(undefined);
   });
 
+  it("Returns the inner value of Some<T> if unsafeUnwrap was called on a Some type", () => {
+    const opt = option.some(123);
+
+    expect(opt.unsafeUnwrap()).toEqual(123);
+  });
+
   it("returns the raw default value if unsafeUnwrapOr() was called on a None type", () => {
     const opt = option.unknown(undefined);
 
     expect(opt.unsafeUnwrapOr(null)).toEqual(null);
+  });
+
+  it("Returns the inner value of Some<T> if unsafeUnwrapOr() was called on a Some<T> type", () => {
+    const opt = option.some(123);
+
+    expect(opt.unsafeUnwrapOr(null)).toEqual(123);
   });
 });
