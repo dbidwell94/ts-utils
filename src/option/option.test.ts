@@ -185,4 +185,16 @@ describe("src/utility/option.ts", () => {
   ])("Properly checks the return type of %s", (_, optVal, validator) => {
     expect(validator(optVal)).toBeTruthy();
   });
+
+  it("Returns `undefined` if unsafeUnwrap() was called on a None type", () => {
+    const opt = option.unknown(undefined);
+
+    expect(opt.unsafeUnwrap()).toEqual(undefined);
+  });
+
+  it("returns the raw default value if unsafeUnwrapOr() was called on a None type", () => {
+    const opt = option.unknown(undefined);
+
+    expect(opt.unsafeUnwrapOr(null)).toEqual(null);
+  });
 });

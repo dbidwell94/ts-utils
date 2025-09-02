@@ -52,12 +52,24 @@ export interface OptionUtils<T> {
    */
   unwrap(): T;
   /**
+   * Extracts the base value from this type, not checking if the value is `None`.
+   * @returns The raw unchecked inner value of the `Option<T>`
+   */
+  unsafeUnwrap(): T | null | undefined;
+  /**
    * Extracts the base value from this type. If there is no value in the `Option<T>`, the function will return the provided default value.
    * @param defaultValue The value to return if the `Option<T>` is a `None`.
    * @throws {OptionIsEmptyError} if the default value is `null` or `undefined`.
    * @returns The value of the `Option<T>` if it is a `Some<T>`, otherwise the default value.
    */
   unwrapOr(defaultValue: T): T;
+  /**
+   * Extracts the base value from this type. If there is no value in the `Option<T>`, the function will return whatever you provided as the
+   * default value, even if that value was not provided (undefined).
+   * @param defaultValue The value to return if the `Option<T>` is a `None`
+   * @returns The possibly undefined | null value of the `Option<T>`.
+   */
+  unsafeUnwrapOr(defaultValue?: T | null): T | null | undefined;
   /**
    * Extracts the base value from this type. The function throws an error with the provided message if there is no value provided.
    * @throws {OptionIsEmptyError} if the default value is `null` or `undefined`.
@@ -114,6 +126,10 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
       if (this.isNone()) throw new OptionIsEmptyError();
       return this.value;
     },
+    unsafeUnwrap() {
+      if (this.isNone()) return undefined;
+      return this.value;
+    },
     unwrapOr(defaultValue) {
       if (this.isSome()) return this.value;
       if (defaultValue === null || defaultValue === undefined)
@@ -121,6 +137,10 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
           "The provided default value was null or undefined.",
         );
       return defaultValue;
+    },
+    unsafeUnwrapOr(defaultValue) {
+      if (this.isNone()) return defaultValue;
+      return this.value;
     },
     expect(message) {
       if (this.isSome()) return this.value;
