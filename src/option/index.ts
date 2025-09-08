@@ -78,6 +78,12 @@ export interface OptionUtils<T> {
    */
   expect(message: string): T;
   /**
+   * Peek into the inner value of this Option<T>, and if `isSome()` then the callback function will be run.
+   * @param callback the callback to run if this Option `isSome`
+   * @returns this `Option<T>`
+   */
+  inspect(callback: (value: T) => void): Option<T>;
+  /**
    * Converts this `Option<T>` type into a `Result<T, E>` type. The `Result<T, E>` will be an `Err<E>` if the `Option<T>` is a `None`.
    * @param error The error to return if the `Option<T>` is a `None`.
    * @returns A `Result<T, E>` type.
@@ -145,6 +151,10 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
     expect(message) {
       if (this.isSome()) return this.value;
       throw new OptionIsEmptyError(message);
+    },
+    inspect(callback) {
+      if (this.isSome()) callback(this.value);
+      return this;
     },
     okOr(error) {
       if (this.isNone()) {
