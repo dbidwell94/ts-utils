@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0]
+
+- Added new utility types to `Option` and `Result` types
+  - Option
+    - inspect(callback) -- Calls the provided `callback` if called on
+      a `Some` variant
+  - Result
+    - inspect(callback) -- Calls the provided `callback` if called on
+      a `Failure` variant
+    - expect(message) -- Unwraps the inner value if variant is `Success`,
+      otherwise throws an `Error` with the provided `message`
+- Update test structure to be more readable and easier to add tests
+
 ## [1.1.0]
 
 - Added new unsafe functions to the `Option` type to return unchecked values.
