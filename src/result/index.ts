@@ -71,6 +71,20 @@ export interface ResultUtils<T, E extends Error = Error> {
    */
   unwrapOrElse(error: E): T;
   /**
+   * Unwraps the inner value of this `Result<T>`. If this Result was an error variant, then an
+   * error will be thrown with the message specified.
+   * @param message The message to set on an `Error` if this Result is not a Success variant.
+   * @returns The inner value of this Result if this Result is a Success variant.
+   * @throws {Error} - If this result was a Failure variant.
+   */
+  expect(message: string): T;
+  /**
+   * Peek into the inner value of this Result<T>, and if `isOk()` then the callback function will be run.
+   * @param callback the callback to run if this Result `isOk`
+   * @returns this `Result<T>`
+   */
+  inspect(callback: (value: T) => void): Result<T>;
+  /**
    * Useful if you do not care if there is an error, you only want to know if there is a value.
    * @returns An `Option<T>` if the inner type was a `Success<T>`, otherwise `None`
    * @see Option
@@ -151,6 +165,18 @@ function buildResult<T, E extends Error>(
         return option.some(this.error);
       }
       return option.none();
+    },
+    expect(message) {
+      if (this.isError()) {
+        throw new Error(message);
+      }
+      return this.value;
+    },
+    inspect(callback) {
+      if (this.isOk()) {
+        callback(this.value);
+      }
+      return this;
     },
     mapOk<NewT>(fn: (value: T) => NewT): Result<NewT, E> {
       if (this.isOk()) {
