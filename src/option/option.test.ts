@@ -140,6 +140,63 @@ describe("src/utility/option.ts", () => {
     });
   });
 
+  describe("flatten", () => {
+    it("Returns `None` if the Option is empty", () => {
+      const optValue = option.none<number>();
+      expect(optValue.flatten().isNone()).toBeTruthy();
+    });
+
+    it("Returns `Some` with a non-nested Option", () => {
+      const optValue = option.some(1);
+      expect(optValue.flatten().unsafeUnwrap()).toEqual(1);
+    });
+
+    it("Flattens out a nested Option and returns None if any properties are None", () => {
+      const optValue = option.some({ one: 1, two: option.none<number>() });
+      expect(optValue.flatten().isNone()).toBeTruthy();
+    });
+
+    it("Flattens out a nested Option and returns Some if all properties are Some", () => {
+      const optValue = option.some({
+        one: 1,
+        two: option.some({
+          three: 3,
+        }),
+      });
+
+      const flattened = optValue.flatten();
+
+      expect(flattened.isSome()).toBeTruthy();
+      expect(flattened.unsafeUnwrap()).toEqual({
+        one: 1,
+        two: {
+          three: 3,
+        },
+      });
+    });
+
+    it("Flattens out a highly deeply nested Option and returns None if any values are None", () => {
+      const optValue = option.some({
+        one: option.some({
+          two: option.some({
+            three: option.some({
+              four: {
+                five: {
+                  six: option.some({
+                    seven: option.none<number>(),
+                  }),
+                },
+              },
+            }),
+          }),
+        }),
+      });
+
+      const flattened = optValue.flatten();
+      expect(flattened.isNone()).toBeTruthy();
+    });
+  });
+
   describe("map", () => {
     it("Returns a None type if map() is called on an existing None type", () => {
       const optionValue = option.none<number>();
