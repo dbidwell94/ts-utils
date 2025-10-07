@@ -5,6 +5,34 @@ enum MarkerType {
   None,
 }
 
+function flattenObject<T extends object>(value: T): Option<Flattened<T>> {
+  for (const key in value) {
+    let prop = value[key];
+    if (
+      prop !== undefined &&
+      prop !== null &&
+      typeof prop === "object" &&
+      "_marker" in prop
+    ) {
+      const propOpt = prop as SerializableOption<unknown>;
+      if (isNone(propOpt)) {
+        return none();
+      }
+      prop = propOpt.value as any;
+    }
+
+    if (typeof prop === "object") {
+      const maybeProp = flattenObject(prop as any);
+      if (maybeProp.isNone()) {
+        return option.none();
+      }
+      value[key] = maybeProp.value as any;
+    }
+    value[key] = prop;
+  }
+  return option.some(value as Flattened<T>);
+}
+
 /**
  * Represents an error that occurs when attempting to unwrap an empty `Option<T>`.
  */
@@ -14,6 +42,16 @@ export class OptionIsEmptyError extends Error {
     this.name = "OptionIsEmptyError";
   }
 }
+
+/**
+ * Represents an
+ */
+export type Flattened<T> =
+  T extends Option<infer U>
+    ? Flattened<U>
+    : T extends Record<string, unknown>
+      ? { [P in keyof T]: Flattened<T[P]> }
+      : T;
 
 /**
  * Represents an `Option<T>` type with no value.
@@ -83,6 +121,12 @@ export interface OptionUtils<T> {
    * @returns this `Option<T>`
    */
   inspect(callback: (value: T) => void): Option<T>;
+  /**
+   * Takes a possibly deeply nested Option<T> and flattens it so only the top level Option<T> is returned.
+   * If any nested Option's are `None`, then this value returns a `None` type.
+   * @returns A recursive flattened Option<T>
+   */
+  flatten(): Option<Flattened<T>>;
   /**
    * Converts this `Option<T>` type into a `Result<T, E>` type. The `Result<T, E>` will be an `Err<E>` if the `Option<T>` is a `None`.
    * @param error The error to return if the `Option<T>` is a `None`.
@@ -155,6 +199,16 @@ function buildOption<T>(innerType: Some<T> | None): Option<T> {
     inspect(callback) {
       if (this.isSome()) callback(this.value);
       return this;
+    },
+    flatten(): Option<Flattened<T>> {
+      if (this.isNone()) {
+        return none();
+      }
+      if (typeof this.value === "object") {
+        return flattenObject(this.value as object) as Option<Flattened<T>>;
+      } else {
+        return option.some(this.value as Flattened<T>);
+      }
     },
     okOr(error) {
       if (this.isNone()) {
