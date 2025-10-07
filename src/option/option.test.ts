@@ -195,6 +195,28 @@ describe("src/utility/option.ts", () => {
       const flattened = optValue.flatten();
       expect(flattened.isNone()).toBeTruthy();
     });
+
+    it("Does not modify `null` or `undefined` if it is nested in an Option object", () => {
+      const optValue = option.some({
+        val1: 1,
+        val2: null,
+        val3: undefined,
+        val4: option.some({
+          val1: 1,
+        }),
+      });
+
+      const flattened = optValue.flatten();
+      expect(flattened.isSome()).toBeTruthy();
+      expect(flattened.unsafeUnwrap()).toEqual({
+        val1: 1,
+        val2: null,
+        val3: undefined,
+        val4: {
+          val1: 1,
+        },
+      });
+    });
   });
 
   describe("map", () => {

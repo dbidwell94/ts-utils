@@ -8,10 +8,12 @@ enum MarkerType {
 function flattenObject<T extends object>(value: T): Option<Flattened<T>> {
   for (const key in value) {
     let prop = value[key];
-    if (prop === null || prop === undefined) {
-      return option.none();
-    }
-    if (typeof prop === "object" && "_marker" in prop) {
+    if (
+      prop !== undefined &&
+      prop !== null &&
+      typeof prop === "object" &&
+      "_marker" in prop
+    ) {
       const propOpt = prop as SerializableOption<unknown>;
       if (isNone(propOpt)) {
         return none();
